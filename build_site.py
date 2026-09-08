@@ -1,5 +1,5 @@
 """data/cctv_clean.csv (+ data/pets.csv, data/lights.csv) → docs/data/data.js  (map.html·index.html 이 읽는 데이터)
-취약도: 도심(주변 24격자 중 12개↑ CCTV 존재) 내 카메라 0~3대 격자.  살펴볼 곳 점수: CCTV 공백 60% + 보안등 공백 40%.  반려견 등록·조명 종류는 보조자료.
+취약도: 도심(주변 24격자 중 12개↑ CCTV 존재) 내 카메라 0~3대 격자.  우선순위: 취약도 × 반려견 등록 밀도.
 """
 import os, re, json
 import pandas as pd, numpy as np

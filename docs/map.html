@@ -220,6 +220,7 @@ textarea{width:100%;min-height:64px;resize:vertical;padding:9px 10px;border-radi
       <div><b id="d-ll">—</b><span>격자 중심 좌표</span></div>
       <div id="kv-pets" style="display:none"><b id="d-pets">—</b><span id="d-pets-l">반려견 등록 (읍면동)</span></div>
       <div id="kv-lights" style="display:none"><b id="d-lights">—</b><span>보안등 (격자 내)</span></div>
+      <div id="kv-lamp" style="display:none"><b id="d-lamp">—</b><span id="d-lamp-l">시군 LED 전환율</span></div>
       <div id="kv-prio" style="display:none"><b id="d-prio">—</b><span>순찰 우선순위 / 100</span></div>
     </div>
     <div class="addr">인근 CCTV 주소<code id="d-addr">—</code></div>
@@ -347,6 +348,7 @@ function updateStats(){
 /* ---------- select ---------- */
 function tipsFor(v){
   const t=[];
+  if(lp&&lp[5]&&lp[2]<30) t.push(`${lp[0]} 보안등 LED 전환율 ${lp[2]}% — 나트륨·메탈등 위주라 연색성이 낮음, LED 교체 건의 대상`);
   if(META.lights&&v[12]!=null&&v[12]<=3) t.push(`격자 내 보안등 ${v[12]}등 — CCTV·조명 이중 공백, 스마트 보안등 설치 최우선`);
   if(META.pets&&v[9]!=null&&v[11]>=60) t.push(`반려견 등록 ${fmt(v[9])}마리 — 펫트롤(반려견 동반 순찰) 노선 1순위 구간`);
   if(v[5]>=400) t.push('반경 400m 이상 CCTV 공백 — 방범용 CCTV 신규 설치 우선 검토 구간');
@@ -363,6 +365,7 @@ function select(i,fly){
   $('#d-nm').textContent=`${v[6]} ${v[7]}`;$('#d-sub').textContent=`취약도 ${v[2]} / 100 · 500m 격자`;
   $('#d-own').textContent=fmt(v[3])+'대';$('#d-nbr').textContent=v[4]+'대';$('#d-near').textContent=fmt(v[5])+'m';
   $('#d-ll').textContent=`${v[0].toFixed(4)}, ${v[1].toFixed(4)}`;
+  const lp=(STATS.lamp||[]).find(x=>x[0]===v[6].split(' ')[0]);if(lp){$('#kv-lamp').style.display='';$('#d-lamp').textContent=lp[2]+'%';$('#d-lamp-l').textContent=`시군 LED 전환율 (${lp[4]||'연도 미상'}${lp[5]?'':' · 오래된 자료'})`;}else $('#kv-lamp').style.display='none';
   if(META.lights){$('#kv-lights').style.display='';$('#kv-prio').style.display='';$('#d-lights').textContent=v[12]!=null?fmt(v[12])+'등':'자료 없음';}
   if(META.pets){$('#kv-pets').style.display='';$('#kv-prio').style.display='';$('#d-pets').textContent=v[9]!=null?fmt(v[9])+'마리':'자료 없음';$('#d-pets-l').textContent=v[10]==='sigun'?'반려견 등록 (시군 합계)':'반려견 등록 (읍면동)';$('#d-prio').textContent=v[11];}$('#d-addr').textContent=v[8]||'—';
   $('#d-tips').innerHTML=tipsFor(v).map(x=>`<li>${x}</li>`).join('');

@@ -135,7 +135,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 <body>
 <nav><div class="wrap">
   <a class="logo" href="#"><i></i>스마트 펫트롤</a>
-  <ul><li><a href="#problem">문제</a></li><li><a href="#how">활동</a></li><li><a href="#rank">살펴볼 곳</a></li><li><a href="#recruit">모집 지역</a></li><li><a href="#effect">기대효과</a></li><li><a href="#data">데이터</a></li></ul>
+  <ul><li><a href="#problem">문제</a></li><li><a href="#how">활동</a></li><li><a href="#rank">살펴볼 곳</a></li><li><a href="#recruit">모집 지역</a></li><li><a href="#lamp">조명 노후도</a></li><li><a href="#effect">기대효과</a></li><li><a href="#data">데이터</a></li></ul>
   <a class="cta" href="map.html">안심지도 열기</a>
 </div></nav>
 
@@ -206,6 +206,17 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <div class="bars" id="recruit-bars" style="margin-top:32px;max-width:640px"></div>
 </div></section>
 
+<section id="lamp"><div class="wrap">
+  <div class="two">
+    <div><div class="eyebrow">보조자료 · 조명 노후도</div><h2>노란 불빛이 많은 도시부터 LED 교체를 건의합니다</h2></div>
+    <div class="lead">
+      <p>나트륨등(주황·노란빛)은 LED보다 어둡고 색을 구분하기 어려워, 얼굴·옷 색 식별이 힘듭니다. 연구로 확인된 것은 "조명 개선이 범죄를 줄인다"(50년 21개 연구 종합 14~21% 감소, 주로 재산범죄·경범죄)이고, "노란빛 자체가 범죄를 늘린다"는 직접 근거는 없습니다. 그래서 이 지표는 점수에 넣지 않고, 어느 시군에 LED 교체를 먼저 건의할지 정하는 데만 씁니다.</p>
+      <p style="margin-top:10px;font-size:13px;color:var(--ink-3)">회색 막대는 기준일이 2020년 이전(고양·성남·용인·김포·안산·하남은 2016년)이라 현재와 다를 수 있습니다. 현장 제보로 실제 등 종류를 확인하는 것이 이 자료의 빈틈을 메우는 방법입니다.</p>
+    </div>
+  </div>
+  <div class="bars" id="lamp-bars" style="margin-top:32px;max-width:640px"></div>
+</div></section>
+
 <section id="effect"><div class="wrap">
   <div class="eyebrow">Step 3 · 기대효과</div>
   <h2>봉사의 가장 큰 제약은 시간입니다. 산책은 이미 그 시간을 쓰고 있습니다.</h2>
@@ -219,14 +230,15 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
 <section id="data"><div class="wrap">
   <div class="eyebrow">데이터 · 갱신</div>
-  <h2>경기데이터드림 공공데이터 3종, 매일 새벽 자동 갱신</h2>
+  <h2>경기데이터드림 공공데이터 4종, 매일 새벽 자동 갱신</h2>
   <div class="src">
     <div><b>CCTV 현황(제공표준)</b><span>openapi.gg.go.kr/CCTV · 기준일 <em data-src="cctv"></em></span></div>
     <div><b>보안등 정보 현황(제공표준)</b><span>openapi.gg.go.kr/SECRTLGT · 기준일 <em data-src="lights"></em></span></div>
     <div><b>반려동물 등록 현황</b><span>openapi.gg.go.kr/AnimalRegistStus · 기준일 <em data-src="pets"></em></span></div>
+    <div><b>경기도 보안등 집계 현황</b><span>openapi.gg.go.kr/Secrtlgt · 시군별 조명 종류, 기준일 시군마다 상이</span></div>
   </div>
   <div class="method">
-    GitHub Actions가 매일 04:30(KST) 세 API를 호출해 <code>data.js</code>를 다시 만들고, 제보 이슈가 바뀔 때마다 <code>reports.js</code>를 갱신해 GitHub Pages에 배포합니다. 인증키는 저장소 Secret에만 있고 이 페이지 어디에도 없습니다.
+    GitHub Actions가 매일 04:30(KST) 네 API를 호출해 <code>data.js</code>를 다시 만들고, 제보 이슈가 바뀔 때마다 <code>reports.js</code>를 갱신해 GitHub Pages에 배포합니다. 인증키는 저장소 Secret에만 있고 이 페이지 어디에도 없습니다.
     격자는 500m, 취약도는 주변 격자 대비 CCTV 부족분, 보안등 공백은 도심 격자 중앙값(11등) 대비 부족분입니다.
     안양·평택·파주는 보안등 등록이 부분적이라 조명 지표를 "자료 없음"으로 처리했고, 안양시는 반려동물 등록 통계가 제공되지 않아 반려견 지표에서 제외됩니다. 마지막 갱신: <em id="updated"></em>
   </div>
@@ -256,6 +268,8 @@ STATS.top10.forEach((t,i)=>{const tr=document.createElement('tr');
 const bars=document.getElementById('bars');const mx=Math.max(...STATS.sig_rank.map(r=>r[1]));
 STATS.sig_rank.forEach(r=>{const b=document.createElement('div');b.className='bar';b.innerHTML=`<span>${r[0]}</span><i style="--p:${(r[1]/mx).toFixed(3)}"></i><b>${fmt(r[1])}</b>`;bars.appendChild(b);});
 
+const lb=document.getElementById('lamp-bars');(STATS.lamp||[]).filter(r=>r[1]>=1000).slice(0,14).forEach(r=>{const b=document.createElement('div');b.className='bar';b.style.gridTemplateColumns='90px 1fr 120px';
+  b.innerHTML=`<span>${r[0]}</span><i style="--p:${(r[3]/100).toFixed(3)};${r[5]?'':'background:#4b5680'}"></i><b style="font-weight:500;color:var(--ink-2)">비LED ${r[3]}%${r[4]?' · '+r[4]:''}</b>`;lb.appendChild(b);});
 const rb=document.getElementById('recruit-bars');if(STATS.recruit&&STATS.recruit.length){const rm=STATS.recruit[0][2];
   STATS.recruit.slice(0,10).forEach(r=>{const b=document.createElement('div');b.className='bar';b.style.gridTemplateColumns='150px 1fr 90px';b.innerHTML=`<span>${r[0]} ${r[1]}</span><i style="--p:${(r[2]/rm).toFixed(3)};background:linear-gradient(90deg,var(--paw),var(--cover))"></i><b>${fmt(r[2])}마리</b>`;rb.appendChild(b);});}
 // paw prints along the route, popping in sequence
