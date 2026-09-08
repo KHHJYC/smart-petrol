@@ -1,0 +1,9 @@
+{
+  "collected_at": "2026-09-08T19:38:28+09:00",
+  "cctv_rows": 83072,
+  "cctv_valid_coord": 80546,
+  "pet_rows": 2647,
+  "light_rows": 297198,
+  "light_valid_coord": 295672,
+  "lamp_type_rows": 27
+}
