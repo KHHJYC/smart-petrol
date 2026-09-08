@@ -1,0 +1,32 @@
+name: 🐾 현장 제보
+description: 반려견 산책 중 발견한 안전 문제를 기록합니다. 확인되면 안심지도에 표시됩니다.
+title: "[제보] "
+labels: ["제보"]
+body:
+  - type: input
+    id: loc
+    attributes:
+      label: 위치
+      description: 안심지도에서 "이 위치 제보하기"를 누르면 자동으로 채워집니다. (위도, 경도)
+      placeholder: "37.3432, 126.9317"
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: 문제 유형
+      options: ["보안등 고장·꺼짐", "어두운 골목", "시설 파손", "CCTV 필요 구간", "펫티켓 위반 다발", "기타"]
+    validations:
+      required: true
+  - type: textarea
+    id: desc
+    attributes:
+      label: 설명
+      description: 언제, 무엇을 봤는지. 사진은 이 칸에 끌어다 놓으면 됩니다.
+    validations:
+      required: true
+  - type: input
+    id: walk
+    attributes:
+      label: 산책 시간대
+      placeholder: "21:30 무렵"
