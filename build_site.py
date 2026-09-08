@@ -1,5 +1,5 @@
 """data/cctv_clean.csv (+ data/pets.csv, data/lights.csv) → docs/data/data.js  (map.html·index.html 이 읽는 데이터)
-취약도: 도심(주변 24격자 중 12개↑ CCTV 존재) 내 카메라 0~3대 격자.  우선순위: 취약도 × 반려견 등록 밀도.
+취약도: 도심(주변 24격자 중 12개↑ CCTV 존재) 내 카메라 0~3대 격자.  살펴볼 곳 점수: CCTV 공백 60% + 보안등 공백 40%.  반려견 등록·조명 종류는 보조자료.
 """
 import os, re, json
 import pandas as pd, numpy as np
@@ -134,7 +134,16 @@ rec = G.groupby(["sgg","dong","sigun"]).agg(cells=("prio","size"),top=("prio","m
 rec["pets"]=[pets_for(a,b)[0] for a,b in zip(rec.sigun,rec.dong)]; rec["lvl"]=[pets_for(a,b)[1] for a,b in zip(rec.sigun,rec.dong)]
 rec=rec[rec.lvl=="dong"].dropna(subset=["pets"]).sort_values(["pets","cells"],ascending=False).head(15)
 RECRUIT=[[r.sgg,r.dong,int(r.pets),int(r.cells),float(r.top)] for r in rec.itertuples()]
-STATS={"recruit":RECRUIT,"cctv":len(PTS),"cameras":int(df["cam"].sum()),"vul":len(VUL),"vul_high":int((G["prio"]>=60).sum()),
+# 보안등 집계(조명기기 종류) — 시군 단위, 점수 미반영 보조자료. 기준일 2020년 이전이면 stale
+LAMP=[]
+if os.path.exists("data/lamp_types.csv"):
+    lt=pd.read_csv("data/lamp_types.csv",dtype=str)
+    for c in ["sodium","metal","led","total"]: lt[c]=pd.to_numeric(lt[c],errors="coerce").fillna(0)
+    lt=lt[lt.total>0]
+    LAMP=[[r.sigun,int(r.total),round(100*r.led/r.total,1),round(100*(r.sodium+r.metal)/r.total,1),(str(r.data_std_de)[:4] if r.data_std_de==r.data_std_de else ""),
+           bool(r.data_std_de==r.data_std_de and str(r.data_std_de)[:4]>="2020")] for r in lt.itertuples()]
+    LAMP.sort(key=lambda r:r[2])
+STATS={"lamp":LAMP,"recruit":RECRUIT,"cctv":len(PTS),"cameras":int(df["cam"].sum()),"vul":len(VUL),"vul_high":int((G["prio"]>=60).sum()),
        "lights":(int(lights["n"].sum()) if lights is not None else None),"dark_cells":dark_cells,"pets":pet_total,
        "dong":len(DONG),"sgg":len(SGG),"top10":top10,"sig_rank":sig_rank,
        "src":{"cctv":str(df["dat_crtr_ymd"].dropna().max())[:8],"lights":"20240322","pets":(str(pets["data_std_de"].dropna().max())[:8] if pets is not None else "")}}

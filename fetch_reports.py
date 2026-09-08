@@ -3,7 +3,6 @@ GitHub Actions 안에서는 자동 제공되는 GITHUB_TOKEN / GITHUB_REPOSITORY
 상태: 라벨 '조치완료' > '확인됨' > 그 외 '접수'.  닫힌 이슈는 라벨 없어도 '조치완료'로 봅니다.
 """
 import os, re, json, requests
-from datetime import datetime
 
 repo = os.environ.get("GITHUB_REPOSITORY"); token = os.environ.get("GITHUB_TOKEN")
 os.makedirs("docs/data", exist_ok=True)

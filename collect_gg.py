@@ -1,6 +1,6 @@
-"""경기데이터드림 OpenAPI 수집기 — CCTV 현황(제공표준) + 반려동물 등록 현황 + 보안등 정보 현황(제공표준)
+"""경기데이터드림 OpenAPI 수집기 — CCTV 현황(제공표준) + 반려동물 등록 현황 + 보안등 정보 현황(제공표준) + 보안등 집계 현황
 사용법:  GG_API_KEY=발급키 python collect_gg.py
-결과:    data/cctv_clean.csv, data/pets.csv, data/meta.json
+결과:    data/cctv_clean.csv, data/pets.csv, data/lights.csv, data/lamp_types.csv, data/meta.json
 키는 코드에 절대 넣지 말고 환경변수(로컬) 또는 GitHub Secret(자동화)으로만 전달합니다.
 """
 import os, sys, csv, json, time
@@ -16,7 +16,7 @@ PSIZE = 1000          # 최대 1,000 (에러 336 방지)
 KST = timezone(timedelta(hours=9))
 
 def fetch_all(svc: str) -> list[dict]:
-    """서비스명(CCTV / AnimalRegistStus)의 전체 row를 페이지네이션으로 수집"""
+    """서비스명의 전체 row를 페이지네이션으로 수집"""
     rows, page = [], 1
     while True:
         r = requests.get(BASE.format(svc=svc),
@@ -69,6 +69,20 @@ def save_lights(rows):
                         r.get("REFINE_WGS84_LAT"), r.get("REFINE_WGS84_LOGT")])
     return len(rows), len(keep)
 
+def save_lamp_types(rows):
+    """경기도_보안등 집계 현황(Secrtlgt): 시군별 나트륨/메탈/LED 개소 (기준일이 시군마다 다름)"""
+    agg={}
+    for r in rows:
+        s=r.get("SIGUN_NM"); d=agg.setdefault(s,{"sodium":0,"metal":0,"led":0,"date":r.get("DATA_STD_DE","")})
+        for k,v in r.items():
+            if k.startswith("NTRM_"): d["sodium"]+=num(v)
+            elif k.startswith("MTAL_"): d["metal"]+=num(v)
+            elif k.startswith("LED_"): d["led"]+=num(v)
+    with open("data/lamp_types.csv","w",newline="",encoding="utf-8") as f:
+        w=csv.writer(f); w.writerow(["sigun","sodium","metal","led","data_std_de","total"])
+        for s,d in agg.items(): w.writerow([s,d["sodium"],d["metal"],d["led"],d["date"],d["sodium"]+d["metal"]+d["led"]])
+    return len(rows)
+
 def save_pets(rows):
     with open("data/pets.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -83,7 +97,9 @@ if __name__ == "__main__":
     cctv_total, cctv_kept = save_cctv(fetch_all("CCTV"))
     pets_total = save_pets(fetch_all("AnimalRegistStus"))
     light_total, light_kept = save_lights(fetch_all("SECRTLGT"))   # 보안등 정보 현황(제공표준), 약 30만 건 = 300페이지
+    lamp_rows = save_lamp_types(fetch_all("Secrtlgt"))               # 보안등 집계 현황 (엔드포인트 대소문자 주의)
     meta = {"collected_at": datetime.now(KST).isoformat(timespec="seconds"),
-            "cctv_rows": cctv_total, "cctv_valid_coord": cctv_kept, "pet_rows": pets_total, "light_rows": light_total, "light_valid_coord": light_kept}
+            "cctv_rows": cctv_total, "cctv_valid_coord": cctv_kept, "pet_rows": pets_total,
+            "light_rows": light_total, "light_valid_coord": light_kept, "lamp_type_rows": lamp_rows}
     json.dump(meta, open("data/meta.json", "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     print(meta)
