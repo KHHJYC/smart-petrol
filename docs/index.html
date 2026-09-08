@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스마트 펫트롤 — 우리동네 안전지킴이</title>
+<meta name="description" content="반려견 산책이 우리동네 순찰이 됩니다. 경기데이터드림 CCTV·보안등·반려동물 등록 데이터로 감시 공백을 찾고, 산책 노선으로 밝힙니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0E1530; --night-2:#161F42; --night-3:#1C2650; --ink:#F3F5FB; --ink-2:#AEB7D6; --ink-3:#6E7AA6;
+  --lamp:#FFB547; --lamp-2:#FFD58A; --cover:#3CD5C8; --risk:#FF5C7A; --paw:#9BE86A; --line:rgba(174,183,214,.14);
+  --w:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--ink);font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:3px}
+.wrap{max-width:var(--w);margin:0 auto;padding:0 24px}
+h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.15}
+h2{font-size:clamp(28px,4vw,42px);font-weight:900}
+h3{font-size:20px;font-weight:700}
+p{margin:0}
+.lead{color:var(--ink-2);font-size:17px;max-width:62ch}
+.k{font-weight:900;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;background:rgba(14,21,48,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;font-size:17px}
+.logo i{width:12px;height:12px;border-radius:50%;background:var(--lamp);box-shadow:0 0 16px 4px rgba(255,181,71,.5)}
+nav ul{display:flex;gap:18px;list-style:none;margin:0 0 0 auto;padding:0;font-size:14px;color:var(--ink-2)}
+nav ul a{text-decoration:none}
+nav ul a:hover{color:var(--ink)}
+.cta{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:var(--lamp);color:#1B1400;font-weight:700;text-decoration:none;transition:transform .15s,background .15s}
+.cta:hover{background:var(--lamp-2);transform:translateY(-1px)}
+.cta.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.cta.ghost:hover{background:rgba(255,255,255,.06)}
+@media(max-width:760px){nav ul{display:none}}
+
+/* hero */
+.hero{position:relative;padding:72px 0 56px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto;height:120%;background:
+  radial-gradient(60% 55% at 78% 30%,rgba(255,181,71,.22),transparent 60%),
+  radial-gradient(40% 40% at 20% 80%,rgba(60,213,200,.12),transparent 60%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(38px,5.6vw,68px);font-weight:900}
+.hero h1 small{display:block;font-size:.34em;font-weight:500;color:var(--lamp-2);margin-bottom:16px;letter-spacing:0}
+.hero .lead{margin-top:22px}
+.hero .actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:38px}
+.kpis div{padding:14px 16px;border-left:2px solid var(--line)}
+.kpis .k{font-size:30px}
+.kpis span{display:block;color:var(--ink-3);font-size:12.5px;margin-top:6px}
+.kpis .risk .k{color:var(--risk)} .kpis .paw .k{color:var(--paw)} .kpis .cover .k{color:var(--cover)}
+.street{width:100%;height:auto;display:block}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:520px){.kpis{grid-template-columns:1fr}.hero{padding:44px 0 36px}}
+
+/* scene animation: one orchestrated sequence */
+.lamp-glow{opacity:0;transform-origin:center;animation:glow .9s ease forwards}
+.lamp-glow.l1{animation-delay:.4s}.lamp-glow.l2{animation-delay:1.6s}.lamp-glow.l3{animation-delay:2.8s}
+@keyframes glow{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+.route{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 3.6s cubic-bezier(.4,0,.2,1) .2s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.paw{opacity:0;animation:pop .35s ease forwards}
+.dark-spot{opacity:0;animation:fadein .8s ease 3.4s forwards}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes fadein{to{opacity:1}}
+
+/* sections */
+section{padding:88px 0;border-top:1px solid var(--line)}
+.eyebrow{color:var(--lamp);font-weight:700;font-size:14px;margin-bottom:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+@media(max-width:860px){.two{grid-template-columns:1fr;gap:28px}}
+
+/* problem */
+.gaps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.gap{padding:24px;border-radius:16px;background:linear-gradient(160deg,var(--night-2),var(--night-3));border:1px solid var(--line)}
+.gap .k{font-size:44px}
+.gap h3{margin-top:12px}
+.gap p{color:var(--ink-2);font-size:14px;margin-top:8px}
+.gap.risk .k{color:var(--risk)} .gap.lamp .k{color:var(--lamp)} .gap.paw .k{color:var(--paw)}
+@media(max-width:860px){.gaps{grid-template-columns:1fr}}
+
+/* route steps (a real sequence) */
+.steps{position:relative;margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.steps::before{content:"";position:absolute;left:8%;right:8%;top:22px;border-top:2px dashed rgba(255,181,71,.35);z-index:0}
+.step{position:relative;z-index:1}
+.step .no{width:46px;height:46px;border-radius:50%;background:var(--night);border:2px solid var(--lamp);color:var(--lamp);display:grid;place-items:center;font-weight:900;font-size:18px;margin-bottom:18px}
+.step h3{margin-bottom:8px}
+.step p{color:var(--ink-2);font-size:15px}
+.step .tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.step .tools span{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2)}
+@media(max-width:860px){.steps{grid-template-columns:1fr}.steps::before{display:none}}
+
+/* ranking */
+.rank{margin-top:36px;display:grid;grid-template-columns:1.2fr .8fr;gap:32px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{font-weight:500;color:var(--ink-3);text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px}
+td{padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.n{color:var(--ink-3);width:36px}
+td .pr{display:inline-block;min-width:44px;font-weight:900;color:var(--risk);font-size:18px;letter-spacing:-.02em}
+td small{color:var(--ink-3);display:block;font-size:12px}
+td a{color:var(--cover);text-decoration:none;font-size:13px;white-space:nowrap}
+.bars{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.bar{display:grid;grid-template-columns:76px 1fr 44px;align-items:center;gap:10px;font-size:14px}
+.bar i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--risk),var(--lamp));transform-origin:left;transform:scaleX(var(--p))}
+.bar b{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.bar span{color:var(--ink-2)}
+@media(max-width:860px){.rank{grid-template-columns:1fr}}
+
+/* effects */
+.effects{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:36px}
+.eff{padding:22px 24px;border-radius:16px;border:1px solid var(--line)}
+.eff h3{margin-bottom:8px}.eff p{color:var(--ink-2);font-size:15px}
+@media(max-width:700px){.effects{grid-template-columns:1fr}}
+
+/* data */
+.src{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.src div{padding:18px 20px;border-radius:14px;background:var(--night-2);border:1px solid var(--line);font-size:14px}
+.src b{display:block;font-size:15px;margin-bottom:4px}
+.src span{color:var(--ink-3);font-size:13px}
+.method{margin-top:28px;padding:22px 24px;border-left:3px solid var(--cover);background:rgba(60,213,200,.06);border-radius:0 14px 14px 0;font-size:15px;color:var(--ink-2)}
+.method code{font-family:inherit;color:var(--ink);background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px}
+@media(max-width:860px){.src{grid-template-columns:1fr}}
+
+footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.route{stroke-dashoffset:0}.lamp-glow,.paw,.dark-spot{opacity:1}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="logo" href="#"><i></i>스마트 펫트롤</a>
+  <ul><li><a href="#problem">문제</a></li><li><a href="#how">활동</a></li><li><a href="#rank">살펴볼 곳</a></li><li><a href="#recruit">모집 지역</a></li><li><a href="#effect">기대효과</a></li><li><a href="#data">데이터</a></li></ul>
+  <a class="cta" href="map.html">안심지도 열기</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div>
+    <h1><small>우리동네 안전지킴이 · 경기도</small>산책하며 발견한 문제를<br>기록하고, 확인하고, 지도에 남깁니다</h1>
+    <p class="lead">공공데이터(CCTV·보안등)는 "먼저 살펴볼 곳"을 알려주는 기초자료입니다. 그 자리를 반려견과 걷는 시민이 확인하고, 꺼진 보안등·파손 시설·어두운 골목을 제보하면, 확인·조치 이력까지 안심지도에 쌓입니다.</p>
+    <div class="actions"><a class="cta" href="map.html">안심지도에서 제보하기</a><a class="cta ghost" href="#how">활동 방법 보기</a></div>
+    <div class="kpis">
+      <div class="risk"><b class="k" data-n="rep_open">—</b><span>제보 접수</span></div>
+      <div class="cover"><b class="k" data-n="rep_done">—</b><span>확인·조치 완료</span></div>
+      <div class="paw"><b class="k" data-n="vul">—</b><span>먼저 살펴볼 곳 (500m 격자)</span></div>
+    </div>
+  </div>
+  <svg class="street" viewBox="0 0 560 420" role="img" aria-label="밤길 위 세 개의 가로등이 차례로 켜지고, 그 사이 어두운 골목을 반려견 발자국이 지나가는 장면">
+    <defs>
+      <radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFB547" stop-opacity=".55"/><stop offset="1" stop-color="#FFB547" stop-opacity="0"/></radialGradient>
+      <linearGradient id="road" x1="0" x2="1"><stop offset="0" stop-color="#1C2650"/><stop offset="1" stop-color="#161F42"/></linearGradient>
+    </defs>
+    <path d="M0 300 C120 250 180 330 300 280 S480 220 560 260 L560 420 L0 420Z" fill="url(#road)"/>
+    <g class="lamp-glow l1"><circle cx="90" cy="230" r="90" fill="url(#g)"/><rect x="88" y="230" width="4" height="70" fill="#AEB7D6" opacity=".7"/><circle cx="90" cy="228" r="6" fill="#FFD58A"/></g>
+    <g class="lamp-glow l2"><circle cx="300" cy="215" r="90" fill="url(#g)"/><rect x="298" y="215" width="4" height="70" fill="#AEB7D6" opacity=".7"/><circle cx="300" cy="213" r="6" fill="#FFD58A"/></g>
+    <g class="lamp-glow l3"><circle cx="500" cy="200" r="90" fill="url(#g)"/><rect x="498" y="200" width="4" height="70" fill="#AEB7D6" opacity=".7"/><circle cx="500" cy="198" r="6" fill="#FFD58A"/></g>
+    <g class="dark-spot"><ellipse cx="195" cy="300" rx="52" ry="22" fill="#FF5C7A" opacity=".18"/><ellipse cx="195" cy="300" rx="52" ry="22" fill="none" stroke="#FF5C7A" stroke-width="1.5" stroke-dasharray="5 5"/><text x="195" y="345" text-anchor="middle" font-size="12" fill="#FF8DA3" font-weight="700">감시 공백</text></g>
+    <path class="route" d="M30 330 C90 310 140 320 195 300 C250 280 280 300 330 285 C400 265 450 275 530 245" fill="none" stroke="#9BE86A" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+    <g fill="#9BE86A" id="paws"></g>
+  </svg>
+</div></header>
+
+<section id="problem"><div class="wrap">
+  <div class="two">
+    <div><div class="eyebrow">Step 1 · 문제발굴</div><h2>공공 데이터는 공백을 알려주지만,<br>그 자리를 지켜주진 못합니다</h2></div>
+    <p class="lead">생활안전지도와 지자체 방범 CCTV 데이터는 공원 외곽이나 좁은 골목 같은 사각지대를 세밀하게 잡아내지 못합니다. 공공 인력만으로는 24시간 감시가 불가능하고, 파손된 시설도 누군가 발견해야 고쳐집니다. 그 사이 반려견 인구는 늘고 있고, 펫티켓은 사회 문제가 됐습니다. 두 문제를 같은 길 위에서 풀 수 있습니다.</p>
+  </div>
+  <div class="gaps">
+    <div class="gap risk"><b class="k" data-n="vul">—</b><h3>도심 감시 공백</h3><p>주변 24개 격자 중 절반 이상에 CCTV가 있는데, 자기 격자에는 0~3대뿐인 500m 격자. 산·논밭이 아닌 생활권 안의 구멍입니다.</p></div>
+    <div class="gap lamp"><b class="k" data-n="dark">—</b><h3>CCTV·보안등 이중 공백</h3><p>그 공백 중 보안등 등록이 0등인 격자. 어둡고 찍히지도 않는 자리라 야간 순찰 1순위입니다.</p></div>
+    <div class="gap paw"><b class="k" data-n="pets">—</b><h3>잠재 순찰자</h3><p>경기도에 등록된 반려견 수. 이들은 이미 매일 밖에 나갑니다. 노선만 바꾸면 순찰이 됩니다.</p></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="eyebrow">Step 2 · 해결활동</div>
+  <h2>기록 → 확인 → 반영, 세 단계가 한 바퀴입니다</h2>
+  <div class="steps">
+    <div class="step"><div class="no">1</div><h3>기록하기</h3><p>산책 중 꺼진 보안등, 파손된 시설, 어두운 골목을 보면 안심지도에서 그 자리를 찍고 제보합니다. 위치·유형·사진이 이슈 하나로 남습니다. "먼저 살펴볼 곳" 순위는 어디부터 걸을지 정할 때 참고합니다.</p><div class="tools"><span>이 위치 제보하기</span><span>사진 첨부</span><span>살펴볼 곳 순위</span></div></div>
+    <div class="step"><div class="no">2</div><h3>확인하기</h3><p>다른 순찰대원이 같은 자리를 다시 걸어 사실을 확인하면 "확인됨" 라벨이 붙습니다. 한 사람의 제보가 아니라 두 번 확인된 기록이 지자체로 갑니다. 반려견과 함께 걷는 모습은 그 자체로 펫티켓 캠페인입니다.</p><div class="tools"><span>확인됨 라벨</span><span>댓글로 이력</span><span>펫티켓 실천</span></div></div>
+    <div class="step"><div class="no">3</div><h3>지도에 반영하기</h3><p>제보가 올라오거나 상태가 바뀌면 몇 분 안에 안심지도에 색으로 표시됩니다(접수·확인됨·조치완료). 조치가 끝난 이슈를 닫으면 이력이 남고, 공공데이터는 매일 새벽 다시 받아옵니다.</p><div class="tools"><span>자동 반영</span><span>상태별 표시</span><span>CSV 내보내기</span></div></div>
+  </div>
+</div></section>
+
+<section id="rank"><div class="wrap">
+  <div class="two">
+    <div><div class="eyebrow">기초자료 · 먼저 살펴볼 곳</div><h2>공공데이터가 가리키는 자리</h2></div>
+    <p class="lead">살펴볼 곳 점수 = CCTV 공백 60% + 보안등 공백 40%. 도심 안인데 찍히지도 않고 어두운 순서입니다. 여기가 "위험한 곳"이라는 뜻은 아니고, 현장 확인이 먼저 필요한 곳이라는 뜻입니다.</p>
+  </div>
+  <div class="rank">
+    <table><thead><tr><th></th><th>지점</th><th>점수</th><th>보안등</th><th></th></tr></thead><tbody id="top10"></tbody></table>
+    <div><h3 style="margin-bottom:14px">시군별 감시 공백 격자 수</h3><div class="bars" id="bars"></div><p style="margin-top:22px"><a class="cta" href="map.html">전체 지도에서 보기</a></p></div>
+  </div>
+</div></section>
+
+<section id="recruit"><div class="wrap">
+  <div class="two">
+    <div><div class="eyebrow">보조자료 · 순찰대 모집 검토 지역</div><h2>걸을 사람이 많은 동네부터</h2></div>
+    <p class="lead">반려동물 등록 현황은 점수에 넣지 않습니다. 대신 살펴볼 곳이 있는 읍면동 중 등록 반려견이 많은 곳을 모집 우선 지역으로 봅니다. 산책 인구가 곧 순찰 인력입니다.</p>
+  </div>
+  <div class="bars" id="recruit-bars" style="margin-top:32px;max-width:640px"></div>
+</div></section>
+
+<section id="effect"><div class="wrap">
+  <div class="eyebrow">Step 3 · 기대효과</div>
+  <h2>봉사의 가장 큰 제약은 시간입니다. 산책은 이미 그 시간을 쓰고 있습니다.</h2>
+  <div class="effects">
+    <div class="eff"><h3>행정에 쓸 수 있는 데이터</h3><p>제보·확인·조치가 좌표·사진·날짜와 함께 이력으로 남습니다. 지자체는 보안등 수리와 CCTV 예산을 어디에 먼저 쓸지 근거를 얻습니다.</p></div>
+    <div class="eff"><h3>펫티켓이 눈에 보이는 문화로</h3><p>조끼를 입고 걷는 반려견과 보호자는 그 자체로 캠페인입니다. 단속이 아니라 시범으로 문화를 바꿉니다.</p></div>
+    <div class="eff"><h3>거부감 없는 참여</h3><p>방범 순찰이라는 말보다 강아지 산책이 문턱이 낮습니다. 이웃이 먼저 말을 겁니다.</p></div>
+    <div class="eff"><h3>끊기지 않는 활동</h3><p>일회성 봉사가 아니라 매일 반복되는 산책이라서, 데이터도 매일 쌓이고 지도도 매일 새로워집니다.</p></div>
+  </div>
+</div></section>
+
+<section id="data"><div class="wrap">
+  <div class="eyebrow">데이터 · 갱신</div>
+  <h2>경기데이터드림 공공데이터 3종, 매일 새벽 자동 갱신</h2>
+  <div class="src">
+    <div><b>CCTV 현황(제공표준)</b><span>openapi.gg.go.kr/CCTV · 기준일 <em data-src="cctv"></em></span></div>
+    <div><b>보안등 정보 현황(제공표준)</b><span>openapi.gg.go.kr/SECRTLGT · 기준일 <em data-src="lights"></em></span></div>
+    <div><b>반려동물 등록 현황</b><span>openapi.gg.go.kr/AnimalRegistStus · 기준일 <em data-src="pets"></em></span></div>
+  </div>
+  <div class="method">
+    GitHub Actions가 매일 04:30(KST) 세 API를 호출해 <code>data.js</code>를 다시 만들고, 제보 이슈가 바뀔 때마다 <code>reports.js</code>를 갱신해 GitHub Pages에 배포합니다. 인증키는 저장소 Secret에만 있고 이 페이지 어디에도 없습니다.
+    격자는 500m, 취약도는 주변 격자 대비 CCTV 부족분, 보안등 공백은 도심 격자 중앙값(11등) 대비 부족분입니다.
+    안양·평택·파주는 보안등 등록이 부분적이라 조명 지표를 "자료 없음"으로 처리했고, 안양시는 반려동물 등록 통계가 제공되지 않아 반려견 지표에서 제외됩니다. 마지막 갱신: <em id="updated"></em>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div>스마트 펫트롤 · 우리동네 안전지킴이 — 2026 AI×공공·사회 데이터 활용 자원봉사 실행 아이디어</div>
+  <div>출처: 경기데이터드림(data.gg.go.kr) · 지도 타일: OpenStreetMap, CARTO</div>
+</div></footer>
+
+<script src="config.js"></script>
+<script src="data/data.js"></script>
+<script>var REPORTS=[];</script>
+<script src="data/reports.js"></script>
+<script>
+(()=>{
+const fmt=n=>n==null?'—':n.toLocaleString('ko-KR');
+const d8=s=>s&&s.length>=8?`${s.slice(0,4)}.${s.slice(4,6)}.${s.slice(6,8)}`:'—';
+document.querySelectorAll('[data-n]').forEach(el=>{const k=el.dataset.n;const v={vul:STATS.vul,cctv:STATS.cctv,pets:STATS.pets,dark:STATS.dark_cells,rep_open:REPORTS.filter(r=>r.status==='접수').length,rep_done:REPORTS.filter(r=>r.status!=='접수').length}[k];el.textContent=fmt(v);});
+document.querySelectorAll('[data-src]').forEach(el=>el.textContent=d8(STATS.src[el.dataset.src]));
+document.getElementById('updated').textContent=META.updated||'—';
+
+const tb=document.getElementById('top10');
+STATS.top10.forEach((t,i)=>{const tr=document.createElement('tr');
+  tr.innerHTML=`<td class="n">${i+1}</td><td>${t[0]} ${t[1]}<small>취약도 ${t[3]}${t[5]!=null?' · 반려견 '+fmt(t[5])+'마리':''}</small></td><td><span class="pr">${Math.round(t[2])}</span></td><td>${t[4]==null?'자료 없음':t[4]+'등'}</td><td><a href="map.html#${t[6]},${t[7]}">지도 →</a></td>`;
+  tb.appendChild(tr);});
+const bars=document.getElementById('bars');const mx=Math.max(...STATS.sig_rank.map(r=>r[1]));
+STATS.sig_rank.forEach(r=>{const b=document.createElement('div');b.className='bar';b.innerHTML=`<span>${r[0]}</span><i style="--p:${(r[1]/mx).toFixed(3)}"></i><b>${fmt(r[1])}</b>`;bars.appendChild(b);});
+
+const rb=document.getElementById('recruit-bars');if(STATS.recruit&&STATS.recruit.length){const rm=STATS.recruit[0][2];
+  STATS.recruit.slice(0,10).forEach(r=>{const b=document.createElement('div');b.className='bar';b.style.gridTemplateColumns='150px 1fr 90px';b.innerHTML=`<span>${r[0]} ${r[1]}</span><i style="--p:${(r[2]/rm).toFixed(3)};background:linear-gradient(90deg,var(--paw),var(--cover))"></i><b>${fmt(r[2])}마리</b>`;rb.appendChild(b);});}
+// paw prints along the route, popping in sequence
+const path=document.querySelector('.route'),g=document.getElementById('paws');
+const L=path.getTotalLength();const N=11;
+for(let i=0;i<N;i++){const p=path.getPointAtLength(L*(i+.5)/N),q=path.getPointAtLength(L*(i+.6)/N);
+  const a=Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI;const side=i%2?7:-7;
+  const el=document.createElementNS('http://www.w3.org/2000/svg','g');
+  el.setAttribute('class','paw');el.style.animationDelay=(0.4+3.4*(i+.5)/N)+'s';el.style.transformOrigin=`${p.x}px ${p.y}px`;
+  el.setAttribute('transform',`translate(${p.x} ${p.y}) rotate(${a}) translate(0 ${side})`);
+  el.innerHTML='<ellipse rx="3.6" ry="4.6"/><circle cx="-4" cy="-5" r="1.5"/><circle cx="-1.3" cy="-6.6" r="1.5"/><circle cx="1.6" cy="-6.6" r="1.5"/><circle cx="4.2" cy="-5" r="1.5"/>';
+  g.appendChild(el);}
+})();
+</script>
+</body>
+</html>
