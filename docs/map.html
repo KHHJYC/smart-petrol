@@ -156,6 +156,7 @@ textarea{width:100%;min-height:64px;resize:vertical;padding:9px 10px;border-radi
   #tray{min-width:0;max-width:calc(100vw - 32px);left:16px;transform:translate(0,8px)}#tray.on{transform:none}
   #legend{display:none}
 }
+.tiles-dark{filter:invert(1) hue-rotate(180deg) brightness(.72) contrast(.95) saturate(.35)}
 </style>
 </head>
 <body>
@@ -245,7 +246,7 @@ textarea{width:100%;min-height:64px;resize:vertical;padding:9px 10px;border-radi
   <div class="l"><span class="sw" style="background:var(--risk);opacity:.85"></span>취약지점 (진할수록 취약)</div>
   <div class="l"><span class="sw" style="background:linear-gradient(90deg,#1c4b8a,var(--cover),#b6ffcf)"></span>CCTV 밀도</div>
   <div class="l"><span class="sw" style="background:var(--lamp)"></span>선택한 지점</div>
-  <select id="base" aria-label="배경지도"><option value="dark">배경: 어두운 지도</option><option value="light">배경: 밝은 지도</option><option value="osm">배경: OpenStreetMap</option></select>
+  <select id="base" aria-label="배경지도"><option value="dark">배경: 어두운 지도</option><option value="light">배경: 밝은 지도</option></select>
 </div>
 <div id="toast" role="status"></div>
 <div id="rep-hint">제보할 위치를 지도에서 클릭하세요 (Esc 취소)</div>
@@ -265,14 +266,13 @@ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- map ---------- */
 const map=L.map('map',{zoomControl:true,preferCanvas:true,attributionControl:true}).setView([37.42,127.1],9);
+const OSM='https://tile.openstreetmap.org/{z}/{x}/{y}.png', OSM_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const bases={
-  dark:L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}),
-  light:L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}),
-  osm:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'})
+  dark:L.tileLayer(OSM,{maxZoom:19,attribution:OSM_ATTR,className:'tiles-dark'}),   // CARTO 타일은 API 키가 필요해져 OSM + CSS 반전으로 대체
+  light:L.tileLayer(OSM,{maxZoom:19,attribution:OSM_ATTR})
 };
-const labels=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,pane:'shadowPane'});
-let base=bases.dark.addTo(map); labels.addTo(map);
-$('#base').onchange=e=>{map.removeLayer(base);base=bases[e.target.value].addTo(map);e.target.value==='dark'?labels.addTo(map):map.removeLayer(labels);};
+let base=bases.dark.addTo(map);
+$('#base').onchange=e=>{map.removeLayer(base);base=bases[e.target.value].addTo(map);};
 
 const heat=L.heatLayer(HEAT,{radius:18,blur:22,maxZoom:13,max:1,minOpacity:.25,gradient:{.2:'#1c4b8a',.5:'#3CD5C8',.8:'#b6ffcf',1:'#ffffff'}}).addTo(map);
 
