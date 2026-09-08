@@ -1,0 +1,38 @@
+name: collect
+on:
+  schedule:
+    - cron: "30 19 * * *"
+  issues:
+    types: [opened, edited, labeled, unlabeled, closed, reopened]
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: read
+concurrency: { group: build, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q requests pandas numpy scipy
+      - name: collect gg.go.kr open data (schedule / manual only)
+        if: github.event_name != 'issues'
+        env:
+          GG_API_KEY: ${{ secrets.GG_API_KEY }}
+        run: python collect_gg.py
+      - name: build data.js (schedule / manual only)
+        if: github.event_name != 'issues'
+        run: python build_site.py
+      - name: issues -> reports.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python fetch_reports.py
+      - name: commit and push
+        run: |
+          git config user.name "petrol-bot"; git config user.email "bot@users.noreply.github.com"
+          git add data/ docs/
+          git diff --cached --quiet || git commit -m "auto: $(date -u +'%Y-%m-%d %H:%M') update"
+          git push
